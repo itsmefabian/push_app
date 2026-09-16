@@ -7,9 +7,11 @@ sealed class NotificationsEvent {
 class NotificationsStatusChange extends NotificationsEvent {
   final AuthorizationStatus status;
 
-  new({required this.status});
+  const NotificationsStatusChange({required this.status});
+}
 
-  
+class NotificationsReceive extends NotificationsEvent {
+  final PushMessages pushMessages;
 
-
+  const NotificationsReceive({required this.pushMessages});
 }

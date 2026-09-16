@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -8,6 +9,7 @@ import 'package:push_app/presentation/blocs/bloc/notifications_bloc.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   await NotificationsBloc.initializeFirebase();
 
   runApp(
@@ -26,6 +28,48 @@ class MainApp extends StatelessWidget {
     return MaterialApp.router(
       routerConfig: appRouter,
       theme: AppTheme().getTheme(),
+      builder: (context, child) =>
+          HandleNotificationsInteractions(child: child!),
     );
+  }
+}
+
+class HandleNotificationsInteractions extends StatefulWidget {
+  final Widget child;
+  const new({super.key, required this.child});
+
+  @override
+  State<HandleNotificationsInteractions> createState() =>
+      _HandleNotificationsInteractionsState();
+}
+
+class _HandleNotificationsInteractionsState
+    extends State<HandleNotificationsInteractions> {
+  @override
+  void initState() {
+    super.initState();
+    setupInteractedMessage();
+  }
+
+  Future<void> setupInteractedMessage() async {
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance
+        .getInitialMessage();
+
+    if (initialMessage != null) {
+      _handleMessage(initialMessage);
+    }
+
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  }
+
+  void _handleMessage(RemoteMessage message) {
+    context.read<NotificationsBloc>().handleRemoteMessage(message);
+
+    appRouter.push('/details/${message.messageId!.replaceAll(':', '').replaceAll('%', '')}');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
   }
 }
