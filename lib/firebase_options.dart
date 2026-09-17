@@ -53,18 +53,18 @@ class DefaultFirebaseOptions {
 
   static FirebaseOptions android = FirebaseOptions(
     apiKey: Environment.apiAndroid,
-    appId: '1:363221789505:android:85115582a1b09ae144cfc0',
-    messagingSenderId: '363221789505',
-    projectId: 'flutter-projects-7abe6',
-    storageBucket: 'flutter-projects-7abe6.firebasestorage.app',
+    appId: Environment.appIdAndroid,
+    messagingSenderId: Environment.messagingSenderId,
+    projectId: Environment.projectId,
+    storageBucket: Environment.storageBucket,
   );
 
   static FirebaseOptions ios = FirebaseOptions(
     apiKey: Environment.apiIOS,
-    appId: '1:363221789505:ios:db878afa05925b0944cfc0',
-    messagingSenderId: '363221789505',
-    projectId: 'flutter-projects-7abe6',
-    storageBucket: 'flutter-projects-7abe6.firebasestorage.app',
-    iosBundleId: 'com.fabianreyes.pushApp',
+    appId: Environment.appIdIOS,
+    messagingSenderId: Environment.messagingSenderId,
+    projectId: Environment.projectId,
+    storageBucket: Environment.storageBucket,
+    iosBundleId: Environment.iosBundleId,
   );
 }

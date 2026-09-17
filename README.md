@@ -28,6 +28,7 @@ Flutter app that receives push notifications through Firebase Cloud Messaging (F
 3. Configure Firebase for this project:
    - Run `flutterfire configure` to (re)generate [lib/firebase_options.dart](lib/firebase_options.dart).
    - Make sure `android/app/google-services.json` is present (downloaded from the Firebase console).
+   - The iOS bundle ID (`PRODUCT_BUNDLE_IDENTIFIER` in `ios/Runner.xcodeproj`, currently `com.fabianreyes.pushApp`) must match an iOS app registered in the Firebase console. A bundle ID can't be edited after an app is registered — if it's wrong, add a new iOS app with the correct bundle ID and re-run `flutterfire configure`. For iOS push to work, also upload an APNs Auth Key under Project settings → Cloud Messaging.
 
 4. Run the app:
 
