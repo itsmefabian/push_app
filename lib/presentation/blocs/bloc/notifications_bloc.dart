@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:push_app/config/local_notifications/local_notifications.dart';
 import 'package:push_app/domain/entities/push_messages.dart';
 import 'package:push_app/firebase_options.dart';
 
@@ -17,6 +18,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+  int pushNumberId = 0;
 
   NotificationsBloc() : super(NotificationsState()) {
     on<NotificationsStatusChange>(_notificationStatusChange);
@@ -36,6 +38,8 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
       provisional: false,
       sound: true,
     );
+
+    LocalNotifications.requestLocalNotificationPermission();
 
     add(NotificationsStatusChange(status: settings.authorizationStatus));
   }
@@ -93,6 +97,12 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
           : message.notification!.apple?.imageUrl,
     );
 
+    LocalNotifications.showLocalNotification(
+      id: ++pushNumberId,
+      title: message.notification!.title,
+      body: message.notification!.body,
+      data: message.data.toString(),
+    );
     add(NotificationsReceive(pushMessages: notification));
   }
 
