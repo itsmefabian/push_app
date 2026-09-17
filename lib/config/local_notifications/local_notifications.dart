@@ -39,7 +39,7 @@ class LocalNotifications {
       'channelName',
       playSound: true,
       sound: RawResourceAndroidNotificationSound('notification'),
-      importance: Importance.defaultImportance,
+      importance: Importance.max,
       priority: Priority.high,
     );
 

@@ -9,6 +9,7 @@ Flutter app that receives push notifications through Firebase Cloud Messaging (F
 - [go_router](https://pub.dev/packages/go_router) — navigation
 - [flutter_dotenv](https://pub.dev/packages/flutter_dotenv) — environment variables
 - [equatable](https://pub.dev/packages/equatable) — value equality for states/events
+- [flutter_local_notifications](https://pub.dev/packages/flutter_local_notifications) — shows a notification while the app is in foreground
 
 ## Setup
 
@@ -38,9 +39,15 @@ Flutter app that receives push notifications through Firebase Cloud Messaging (F
 
 ## Notification handling
 
-- **Foreground**: `NotificationsBloc._onForegroundMessage` listens to `FirebaseMessaging.onMessage` and adds the message to the bloc's state, which `HomeScreen` renders as a list.
-- **Background**: `firebaseMessagingBackgroundHandler` (top-level, annotated with `@pragma('vm:entry-point')`) handles messages while the app is backgrounded/terminated.
-- **Tap on a notification**: `HandleNotificationsInteractions` (in [lib/main.dart](lib/main.dart)) wraps the app and, via `getInitialMessage()` (cold start) and `onMessageOpenedApp` (app in background), pushes `/details/:messageId` with `appRouter`.
+- **Foreground**: `NotificationsBloc._onForegroundMessage` listens to `FirebaseMessaging.onMessage`, adds the message to the bloc's state (rendered as a list by `HomeScreen`), and shows it via `LocalNotifications.showLocalNotification` (Android/iOS don't display a system notification on their own while the app is in foreground — the app has to do it).
+- **Background**: `firebaseMessagingBackgroundHandler` (top-level, annotated with `@pragma('vm:entry-point')`) handles messages while the app is backgrounded/terminated; the OS shows the notification automatically in this case.
+- **Tap on a notification**: `HandleNotificationsInteractions` (in [lib/main.dart](lib/main.dart)) wraps the app and, via `getInitialMessage()` (cold start) and `onMessageOpenedApp` (app in background), pushes `/details/:messageId` with `appRouter`. Tapping a local (foreground) notification is handled separately by `LocalNotifications.onDidReceiveNotificationResponse`.
+
+### Troubleshooting
+
+- `POST_NOTIFICATIONS` must be declared in `AndroidManifest.xml` (Android 13+) or no notification — local or FCM — will show.
+- Android notification channels (`local_notifications.dart`'s `channelId`) are immutable once created on a device: if a foreground notification doesn't show even though the code looks right, uninstall the app (not just re-run) to recreate the channel, or bump the channel id.
+- Prefer testing on a physical device over an emulator — notification/foreground behavior has been inconsistent on some emulator images.
 
 ## Project structure
 
